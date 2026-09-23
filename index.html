@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Risk Management Reviewer — Safety, Security & Sanitation</title>
+<style>
+  :root{
+    --navy:#0f2a4a;
+    --navy-dark:#0a1d33;
+    --gold:#f0b429;
+    --gold-dark:#d99a1b;
+    --bg:#f5f7fa;
+    --card:#ffffff;
+    --text:#1c2733;
+    --muted:#5b6b7c;
+    --green:#1e8e5a;
+    --red:#c0392b;
+    --radius:14px;
+    --shadow:0 4px 18px rgba(15,42,74,0.08);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    padding-bottom:60px;
+  }
+  header{
+    background:linear-gradient(120deg,var(--navy) 0%, var(--navy-dark) 100%);
+    color:#fff;
+    padding:28px 20px 22px;
+    position:relative;
+    overflow:hidden;
+  }
+  header::after{
+    content:"";
+    position:absolute; top:0; right:0; bottom:0;
+    width:120px;
+    background:repeating-linear-gradient(115deg, var(--gold) 0 18px, transparent 18px 34px);
+    opacity:0.9;
+  }
+  header h1{margin:0 0 4px; font-size:1.5rem; position:relative; z-index:2;}
+  header p{margin:0; opacity:0.85; font-size:0.9rem; position:relative; z-index:2;}
+  nav{
+    display:flex; flex-wrap:wrap; gap:8px;
+    padding:14px 16px;
+    background:#fff;
+    position:sticky; top:0; z-index:10;
+    box-shadow:0 2px 8px rgba(0,0,0,0.06);
+  }
+  nav button{
+    border:none; background:var(--bg); color:var(--navy);
+    padding:9px 14px; border-radius:999px; font-size:0.85rem; font-weight:600;
+    cursor:pointer; transition:0.15s;
+  }
+  nav button:hover{background:#e8edf3;}
+  nav button.active{background:var(--navy); color:#fff;}
+  main{max-width:920px; margin:0 auto; padding:22px 16px;}
+  section{display:none;}
+  section.active{display:block; animation:fade .25s ease;}
+  @keyframes fade{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
+  h2{color:var(--navy); border-left:6px solid var(--gold); padding-left:10px; margin-top:0;}
+  .card{
+    background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow);
+    padding:18px 20px; margin-bottom:16px;
+  }
+  .lead{color:var(--muted); font-size:0.95rem; line-height:1.5;}
+  .pill{
+    display:inline-block; background:var(--navy); color:#fff; font-size:0.72rem;
+    padding:3px 10px; border-radius:999px; margin-bottom:8px; letter-spacing:0.03em;
+  }
+  .three-cols{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px;}
+  .def-card h3{margin:0 0 6px; color:var(--navy-dark); font-size:1.05rem;}
+  .def-card p{margin:0; font-size:0.92rem; color:var(--text);}
+  ol.num-list, ul.plain-list{padding-left:20px; margin:8px 0;}
+  ol.num-list li, ul.plain-list li{margin-bottom:6px; font-size:0.94rem;}
+  .accordion-item{border:1px solid #e2e8f0; border-radius:10px; margin-bottom:8px; overflow:hidden;}
+  .accordion-head{
+    background:#eef2f7; padding:12px 14px; cursor:pointer; font-weight:600;
+    display:flex; justify-content:space-between; align-items:center; font-size:0.95rem;
+  }
+  .accordion-head:hover{background:#e3e9f1;}
+  .accordion-body{max-height:0; overflow:hidden; transition:max-height .3s ease;}
+  .accordion-body-inner{padding:12px 14px; font-size:0.92rem; color:var(--text); line-height:1.5;}
+  .accordion-item.open .accordion-body{max-height:400px;}
+  .accordion-item.open .chev{transform:rotate(90deg);}
+  .chev{transition:transform .2s; font-size:0.8rem; color:var(--navy);}
+  .example-tag{
+    display:inline-block; margin-top:6px; background:#fff4d9; color:#8a5a00;
+    padding:2px 8px; border-radius:6px; font-size:0.8rem;
+  }
+  .hazard-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:14px;}
+  .hazard-card{
+    background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow);
+    padding:16px; border-top:5px solid var(--gold);
+  }
+  .hazard-card h3{margin:0 0 6px; color:var(--navy); font-size:1rem;}
+  .hazard-card p{font-size:0.88rem; margin:4px 0; color:var(--text);}
+  .hazard-card .ex{font-size:0.85rem; color:var(--muted); font-style:italic;}
+  /* Flashcards */
+  .flash-wrap{display:flex; flex-direction:column; align-items:center; gap:14px;}
+  .flashcard{
+    width:100%; max-width:520px; height:230px; perspective:1200px; cursor:pointer;
+  }
+  .flash-inner{
+    position:relative; width:100%; height:100%; text-align:center;
+    transition:transform .5s; transform-style:preserve-3d;
+  }
+  .flashcard.flipped .flash-inner{transform:rotateY(180deg);}
+  .flash-face{
+    position:absolute; inset:0; backface-visibility:hidden;
+    border-radius:var(--radius); display:flex; align-items:center; justify-content:center;
+    padding:24px; box-shadow:var(--shadow); font-size:1.05rem; line-height:1.5;
+  }
+  .flash-front{background:var(--navy); color:#fff;}
+  .flash-back{background:#fff; color:var(--text); border:2px solid var(--gold); transform:rotateY(180deg); font-size:0.95rem;}
+  .flash-controls{display:flex; gap:10px; align-items:center;}
+  .btn{
+    background:var(--navy); color:#fff; border:none; padding:10px 18px;
+    border-radius:8px; cursor:pointer; font-weight:600; font-size:0.9rem;
+  }
+  .btn.secondary{background:#fff; color:var(--navy); border:2px solid var(--navy);}
+  .btn.gold{background:var(--gold); color:#3a2600;}
+  .btn:hover{opacity:0.9;}
+  .counter{font-size:0.85rem; color:var(--muted);}
+  /* Quiz */
+  .quiz-progress{
+    height:8px; background:#e2e8f0; border-radius:6px; overflow:hidden; margin-bottom:14px;
+  }
+  .quiz-progress-bar{height:100%; background:var(--gold); width:0%; transition:width .3s;}
+  .quiz-q{font-size:1.05rem; font-weight:600; margin-bottom:14px; color:var(--navy-dark);}
+  .opt{
+    display:block; width:100%; text-align:left; background:#fff; border:2px solid #dfe6ee;
+    border-radius:10px; padding:12px 14px; margin-bottom:10px; cursor:pointer; font-size:0.92rem;
+  }
+  .opt:hover{border-color:var(--gold);}
+  .opt.correct{background:#e6f6ee; border-color:var(--green); color:var(--green);}
+  .opt.incorrect{background:#fdeceb; border-color:var(--red); color:var(--red);}
+  .opt.disabled{pointer-events:none;}
+  .explain{
+    background:#eef2f7; border-radius:10px; padding:12px 14px; font-size:0.88rem;
+    margin-top:8px; display:none;
+  }
+  .quiz-result{text-align:center;}
+  .quiz-result h3{font-size:1.6rem; color:var(--navy);}
+  footer{text-align:center; color:var(--muted); font-size:0.78rem; padding:20px;}
+  select{padding:8px 10px; border-radius:8px; border:1px solid #dfe6ee; font-size:0.85rem;}
+
+  /* Memory tips + section practice quizzes */
+  .tip-box{
+    background:#fff8e6; border:1.5px dashed var(--gold-dark); border-radius:12px;
+    padding:14px 16px; margin:14px 0; font-size:0.9rem; line-height:1.55;
+  }
+  .tip-box .tip-label{font-weight:700; color:var(--gold-dark); display:block; margin-bottom:4px;}
+  .practice-block{
+    background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow);
+    padding:18px 20px; margin-top:18px; border-top:5px solid var(--navy);
+  }
+  .practice-block h3{margin:0 0 4px; color:var(--navy);}
+  .practice-block .lead{margin-bottom:12px;}
+  .mini-progress{height:6px; background:#e2e8f0; border-radius:6px; overflow:hidden; margin-bottom:12px;}
+  .mini-progress-bar{height:100%; background:var(--gold); width:0%; transition:width .3s;}
+  .regen-row{display:flex; justify-content:flex-end; margin-top:12px;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📋 Risk Management Reviewer</h1>
+  <p>As applied to Safety, Security, and Sanitation — National Teachers College, School of Business (BS-HTM)</p>
+</header>
+
+<nav id="tabs">
+  <button data-tab="overview" class="active">Overview</button>
+  <button data-tab="definitions">Definitions</button>
+  <button data-tab="safety-components">Safety Components</button>
+  <button data-tab="emergency">Emergency Procedures</button>
+  <button data-tab="hazards">8 Key Hazards</button>
+  <button data-tab="assessment">Risk Assessment</button>
+  <button data-tab="treatment">Treatment & Communication</button>
+  <button data-tab="case">Case Study</button>
+  <button data-tab="flashcards">Flashcards</button>
+  <button data-tab="quiz">Quiz</button>
+</nav>
+
+<main>
+
+  <!-- OVERVIEW -->
+  <section id="overview" class="active">
+    <h2>Course Overview</h2>
+    <div class="card">
+      <div class="pill">TOPIC OUTLINE</div>
+      <ol class="num-list">
+        <li><b>Introduction to Risk Management</b> — Concepts, Definitions, Risk assessment techniques, Treatment options & communication</li>
+        <li><b>Safety Management & Emergency Procedures</b> — Occupational Health Standards, Hazards Control & Accidents, Emergency Preparedness and Fire Safety</li>
+        <li><b>Workspace Accidents Scenarios</b> — First Response Protocol</li>
+        <li><b>Security Management</b> — Threats & Vulnerability Profiling, Physical Security & Surveillance, Crisis Management Response</li>
+        <li><b>Sanitation and Food Safety</b> — Foodborne illnesses & vectors, Hygiene laws & Chemical Safety, Core HACCP system principles</li>
+        <li><b>Environmental Health & Safety</b> — Waste management & disposal, Green Practices & Eco-sustainability, Environmental incident plan</li>
+        <li><b>Risk Program Implementation</b> — Building the Risk Plan, Program monitoring systems, Continuous improvement cultures</li>
+      </ol>
+    </div>
+    <div class="card">
+      <div class="pill">BIG IDEA</div>
+      <p class="lead">Risk management in Tourism and Hospitality Management is the <b>methodical process of identifying, assessing, controlling, and monitoring risks</b> that may affect guests, employees, facilities, business operations, and the environment. It involves direct interaction with people, food, accommodations, transportation, and public facilities (structural and super-structural) — and is essential in maintaining a <b>SAFE, SECURE, and HEALTHY ENVIRONMENT</b>.</p>
+    </div>
+    <div class="card">
+      <div class="pill">WHY IT MATTERS</div>
+      <div class="three-cols">
+        <div class="def-card"><h3>1–5</h3><p>Protects guests & employees · Prevents accidents, illnesses, property damage · Maintains cleanliness & public health · Reduces financial loss & disruption · Ensures compliance with laws & standards</p></div>
+        <div class="def-card"><h3>6–8</h3><p>Builds customer trust & satisfaction · Protects the establishment's reputation · Ensures business operational continuity during emergencies</p></div>
+        <div class="def-card"><h3>Golden Rule</h3><p>"Prevention is better than cure" — anticipate hazards and act before they cause harm to people, the environment, or the business.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DEFINITIONS -->
+  <section id="definitions">
+    <h2>Core Definitions</h2>
+    <div class="three-cols">
+      <div class="card def-card"><h3>🛡️ Safety</h3><p>Focuses on <b>preventing accidents, injuries, and emergencies.</b></p></div>
+      <div class="card def-card"><h3>🔒 Security</h3><p>Protects guests, employees, property, information, and business assets from threats such as <b>theft, violence, unauthorized access, fraud</b>, and other security incidents.</p></div>
+      <div class="card def-card"><h3>🧼 Sanitation</h3><p>Focuses on maintaining cleanliness and preventing the spread of disease/contamination — proper <b>food handling, personal hygiene, cleaning & disinfection, waste disposal, pest control</b>, and sanitary guest rooms/public areas.</p></div>
+    </div>
+
+    <h2 style="margin-top:26px;">Key Terms (tap to expand)</h2>
+    <div id="glossary"></div>
+
+    <div class="tip-box">
+      <span class="tip-label">🧠 Memory Tip</span>
+      Picture <b>3 S's</b> guarding a hotel gate: <b>S</b>afety (no accidents), <b>S</b>ecurity (no bad actors), <b>S</b>anitation (no germs). For Threat vs. Vulnerability, remember: a <b>Threat</b> "knocks" from the outside, a <b>Vulnerability</b> is the "unlocked door" that lets it in.
+    </div>
+
+    <div class="practice-block" id="pb-definitions">
+      <h3>🎯 Practice Quiz — Definitions</h3>
+      <p class="lead">Test yourself on Safety, Security, Sanitation, Threats & Vulnerability.</p>
+      <div class="mini-progress"><div class="mini-progress-bar" id="mp-definitions"></div></div>
+      <div id="pq-definitions"></div>
+      <div class="regen-row"><button class="btn gold" id="regen-definitions">🔁 Generate New Practice Quiz</button></div>
+    </div>
+  </section>
+
+  <!-- SAFETY COMPONENTS -->
+  <section id="safety-components">
+    <h2>Safety Management — The 8 Components</h2>
+
+    <div class="card">
+      <div class="pill">REFLECT FIRST</div>
+      <p class="lead"><b>1. The "Near-Miss" Experience</b> — Think back to the last time you tripped over a loose cord, slipped on a wet surface, or burned yourself cooking. In that split second before it happened, did you notice the hazard, or did you assume everything was fine?</p>
+      <p class="lead"><b>2. The "Ignored Hazard" Moment</b> — Have you ever spotted an overloaded power outlet, a spill, or a broken step, thought "someone should fix that," and walked away? What actually happened next?</p>
+    </div>
+
+    <div class="card">
+      <p class="lead"><b>Safety Management</b> is the systematic process of identifying hazards, assessing risks, preventing accidents, and protecting guests, employees, property, and the environment from harm.</p>
+      <ol class="num-list" id="safety8"></ol>
+    </div>
+
+    <div class="tip-box">
+      <span class="tip-label">🧠 Memory Tip</span>
+      Say this silly sentence — the first letter of each word matches a component in order:<br>
+      <i>"<b>H</b>appy <b>R</b>abbits <b>R</b>un <b>P</b>ast <b>T</b>he <b>I</b>ce-cream, <b>I</b>cy <b>C</b>astle"</i><br>
+      = <b>H</b>azard ID → <b>R</b>isk Assessment → <b>R</b>isk Prevention/Control → <b>P</b>olicies & Standards → <b>T</b>raining → <b>I</b>nspection & Monitoring → <b>I</b>ncident Reporting → <b>C</b>ontinuous Improvement.
+    </div>
+
+    <div class="practice-block" id="pb-safety">
+      <h3>🎯 Practice Quiz — Safety Components</h3>
+      <p class="lead">Match the scenario or description to the correct component.</p>
+      <div class="mini-progress"><div class="mini-progress-bar" id="mp-safety"></div></div>
+      <div id="pq-safety"></div>
+      <div class="regen-row"><button class="btn gold" id="regen-safety">🔁 Generate New Practice Quiz</button></div>
+    </div>
+  </section>
+
+  <!-- EMERGENCY -->
+  <section id="emergency">
+    <h2>Emergency Procedures — The 10 Components</h2>
+    <div class="card">
+      <p class="lead"><b>Emergency Procedures</b> are planned and organized actions that must be followed when an unexpected event threatens the safety, security, health, or property of guests and employees.</p>
+      <ol class="num-list" id="emergency10"></ol>
+    </div>
+    <div class="card">
+      <div class="pill">SECURITY CONCEPTS</div>
+      <div class="three-cols">
+        <div class="def-card"><h3>Threat</h3><p>Any person, condition, activity, event, or situation that has the <b>potential to cause</b> injury, illness, property damage, financial loss, or disruption of operations.</p></div>
+        <div class="def-card"><h3>Vulnerability</h3><p>A <b>weakness or condition</b> that makes a person, facility, system, or organization more likely to be affected by a threat.</p></div>
+      </div>
+    </div>
+
+    <div class="tip-box">
+      <span class="tip-label">🧠 Memory Tip</span>
+      Instead of memorizing 10 items in a row, sort them into a timeline — <b>Before → During → After</b>:<br>
+      <b>Before:</b> Preparedness, Response Plan, Equipment, Assignment of Responsibilities, Drills & Training.<br>
+      <b>During:</b> Communication, Evacuation Procedures, First Aid.<br>
+      <b>After:</b> Coordination with Authorities, Post-Emergency Evaluation.
+    </div>
+
+    <div class="practice-block" id="pb-emergency">
+      <h3>🎯 Practice Quiz — Emergency Procedures</h3>
+      <p class="lead">Covers the 10 components plus Threat vs. Vulnerability.</p>
+      <div class="mini-progress"><div class="mini-progress-bar" id="mp-emergency"></div></div>
+      <div id="pq-emergency"></div>
+      <div class="regen-row"><button class="btn gold" id="regen-emergency">🔁 Generate New Practice Quiz</button></div>
+    </div>
+  </section>
+
+  <!-- HAZARDS -->
+  <section id="hazards">
+    <h2>Key Areas of Focus: 8 Hazard Types</h2>
+    <p class="lead">From Workspace Accidents Scenarios — grounded in OHS ISO 45001:2018 (it's the law AND good practice).</p>
+    <div class="hazard-grid" id="hazardGrid"></div>
+
+    <div class="tip-box">
+      <span class="tip-label">🧠 Memory Tip</span>
+      <i>"<b>P</b>lease <b>C</b>heck <b>B</b>iology, <b>E</b>very <b>E</b>lectrical <b>F</b>ire <b>S</b>tays <b>S</b>anitary"</i><br>
+      = <b>P</b>hysical → <b>C</b>hemical → <b>B</b>iological → <b>E</b>rgonomic → <b>E</b>lectrical → <b>F</b>ire/Explosion → <b>S</b>ecurity → <b>S</b>anitation & Food Safety.
+    </div>
+
+    <div class="practice-block" id="pb-hazards">
+      <h3>🎯 Practice Quiz — 8 Hazard Types</h3>
+      <p class="lead">Match the example to the correct hazard category.</p>
+      <div class="mini-progress"><div class="mini-progress-bar" id="mp-hazards"></div></div>
+      <div id="pq-hazards"></div>
+      <div class="regen-row"><button class="btn gold" id="regen-hazards">🔁 Generate New Practice Quiz</button></div>
+    </div>
+  </section>
+
+  <!-- ASSESSMENT -->
+  <section id="assessment">
+    <h2>Risk Assessment Techniques</h2>
+    <div class="card">
+      <div class="pill">7 COMMON TECHNIQUES</div>
+      <ol class="num-list">
+        <li>Identify the hazard situations, places, and things</li>
+        <li>Assess the Risk Matrix (e.g., severity vs. likelihood)</li>
+        <li>Inspection and walkthrough examination</li>
+        <li>Job Safety Analysis</li>
+        <li>Standard checklists</li>
+        <li>Analysis of incidents and accidents</li>
+        <li>The "what if" analysis</li>
+      </ol>
+    </div>
+    <div class="card">
+      <div class="pill">7-STEP RISK ASSESSMENT PROCESS</div>
+      <ol class="num-list">
+        <li>Determine the context of the scenario</li>
+        <li>Identify the potential hazards</li>
+        <li>Analyze the risk and conclude its gravity (severity)</li>
+        <li>Evaluate and prioritize what is acceptable vs. non-acceptable to standards</li>
+        <li>Select control measures to use as procedures</li>
+        <li>Implement the control practices</li>
+        <li>Monitor and review effectiveness and adjust as needed</li>
+      </ol>
+    </div>
+
+    <div class="tip-box">
+      <span class="tip-label">🧠 Memory Tip</span>
+      <i>"<b>I</b>t's <b>A</b>lways <b>I</b>mportant <b>J</b>obs <b>S</b>tay <b>A</b>nalyzed <b>W</b>isely"</i><br>
+      = <b>I</b>dentify hazards → <b>A</b>ssess Risk Matrix → <b>I</b>nspection/walkthrough → <b>J</b>ob Safety Analysis → <b>S</b>tandard checklists → <b>A</b>nalysis of incidents → <b>W</b>hat-if analysis.
+    </div>
+
+    <div class="practice-block" id="pb-assessment">
+      <h3>🎯 Practice Quiz — Risk Assessment</h3>
+      <p class="lead">Covers the 7 techniques and the 7-step assessment process.</p>
+      <div class="mini-progress"><div class="mini-progress-bar" id="mp-assessment"></div></div>
+      <div id="pq-assessment"></div>
+      <div class="regen-row"><button class="btn gold" id="regen-assessment">🔁 Generate New Practice Quiz</button></div>
+    </div>
+  </section>
+
+  <!-- TREATMENT -->
+  <section id="treatment">
+    <h2>Risk Treatment & Communication</h2>
+    <div class="card">
+      <p class="lead"><b>Risk Treatment</b> refers to the actions taken once a risk is identified. Options fall under five categories:</p>
+      <div class="three-cols">
+        <div class="def-card"><h3>Avoidance</h3><p>Eliminate the activity or exposure that creates the risk entirely.</p></div>
+        <div class="def-card"><h3>Reduction</h3><p>Lower the likelihood or severity of the risk through controls.</p></div>
+        <div class="def-card"><h3>Sharing</h3><p>Transfer or distribute the risk (e.g., insurance, contracts, partners).</p></div>
+        <div class="def-card"><h3>Retention</h3><p>Accept the risk when it's within tolerable limits.</p></div>
+        <div class="def-card"><h3>Escalation</h3><p>Refer the risk to a higher level of authority for decision.</p></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="pill">CRITICAL THINKING FRAMEWORK</div>
+      <p class="lead">The central question in risk treatment is: <b>"What should we do about the risk?"</b> Communication must then answer:</p>
+      <ul class="plain-list">
+        <li>Who needs to know?</li>
+        <li>What do they need to know?</li>
+        <li>How should we tell them?</li>
+      </ul>
+      <p class="lead">Answering these prevents incidents and protects people, the environment, places, and property. Communication must be <b>accurate, timely, and understandable</b> for people affected internally or externally.</p>
+    </div>
+
+    <div class="tip-box">
+      <span class="tip-label">🧠 Memory Tip</span>
+      <i>"<b>A</b> <b>R</b>ich <b>S</b>quirrel <b>R</b>eally <b>E</b>scapes"</i><br>
+      = <b>A</b>voidance → <b>R</b>eduction → <b>S</b>haring → <b>R</b>etention → <b>E</b>scalation. For communication, just remember <b>3 W's</b>: <b>W</b>ho, <b>W</b>hat, and how to tell them (the third "how" completes the trio).
+    </div>
+
+    <div class="practice-block" id="pb-treatment">
+      <h3>🎯 Practice Quiz — Treatment & Communication</h3>
+      <p class="lead">Covers the 5 treatment options and the communication framework.</p>
+      <div class="mini-progress"><div class="mini-progress-bar" id="mp-treatment"></div></div>
+      <div id="pq-treatment"></div>
+      <div class="regen-row"><button class="btn gold" id="regen-treatment">🔁 Generate New Practice Quiz</button></div>
+    </div>
+  </section>
+
+  <!-- CASE STUDY -->
+  <section id="case">
+    <h2>Case Study: The Busy Lunch Service</h2>
+    <div class="card">
+      <p class="lead">During a peak lunch hour at a hotel restaurant, a server accidentally spills a pitcher of water on the main walkway between the kitchen and dining area. Because of the rush, no staff member cleans it up or places a caution sign. Simultaneously, a kitchen staff member props open the rear emergency exit door with a box to cool down the hot kitchen — leaving the back entry unlocked and unattended.</p>
+    </div>
+    <div class="card">
+      <div class="pill">PRACTICE — think it through, then reveal</div>
+      <p><b>1. Identify the primary Safety hazard and the primary Security vulnerability.</b></p>
+      <button class="btn secondary" onclick="toggleReveal('rev1')">Reveal Answer</button>
+      <div class="explain" id="rev1" style="margin-top:10px;">
+        <b>Safety hazard:</b> the unattended water spill on the main walkway — a slip/trip hazard during peak service.<br><br>
+        <b>Security vulnerability:</b> the propped-open, unlocked, unattended rear emergency exit — allowing unauthorized access into the establishment.
+      </div>
+      <p style="margin-top:16px;"><b>2. What immediate actions should management or staff take?</b></p>
+      <button class="btn secondary" onclick="toggleReveal('rev2')">Reveal Answer</button>
+      <div class="explain" id="rev2" style="margin-top:10px;">
+        Immediately clean/dry the spill and place a "wet floor" caution sign to prevent slips; assign or remind staff of the standing rule that emergency exits must stay closed except during actual emergencies, and have security/a designated staff member close and monitor the door. Both corrective actions should be logged as part of incident reporting and safety inspection follow-up.
+      </div>
+    </div>
+  </section>
+
+  <!-- FLASHCARDS -->
+  <section id="flashcards">
+    <h2>Flashcards</h2>
+    <p class="lead">Tap the card to flip. Use Next/Prev to move through the deck.</p>
+    <div class="flash-wrap">
+      <div class="flashcard" id="flashcard" onclick="flipCard()">
+        <div class="flash-inner" id="flashInner">
+          <div class="flash-face flash-front" id="flashFront"></div>
+          <div class="flash-face flash-back" id="flashBack"></div>
+        </div>
+      </div>
+      <div class="flash-controls">
+        <button class="btn secondary" onclick="prevCard()">◀ Prev</button>
+        <span class="counter" id="flashCounter"></span>
+        <button class="btn secondary" onclick="nextCard()">Next ▶</button>
+      </div>
+      <button class="btn gold" onclick="shuffleCards()">🔀 Shuffle Deck</button>
+    </div>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="quiz">
+    <h2>Quick Quiz</h2>
+    <div class="card" id="quizCard">
+      <div class="quiz-progress"><div class="quiz-progress-bar" id="quizProgress"></div></div>
+      <div id="quizBody"></div>
+    </div>
+  </section>
+
+</main>
+
+<footer>Built as a self-study reviewer from your NTC Risk Management (Weeks 1–5) lecture deck. Good luck on your review! 🎓</footer>
+
+<script>
+/* ---------- TAB NAVIGATION ---------- */
+const tabs = document.querySelectorAll('#tabs button');
+tabs.forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    tabs.forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('main > section').forEach(s=>s.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+  });
+});
+
+/* ---------- DATA ---------- */
+const glossaryTerms = [
+  ["Hazard Identification","Recognizing potential sources of accidents or injuries."],
+  ["Risk Assessment","Determining the likelihood and possible consequences of identified hazards."],
+  ["Risk Prevention and Control","Implementing measures to eliminate or reduce risks."],
+  ["Safety Policies and Standards","Establishing rules and procedures for safe operations."],
+  ["Safety Training","Training employees in first aid, fire safety, proper equipment use, and emergency response."],
+  ["Safety Inspection and Monitoring","Regularly checking facilities, equipment, food areas, guest rooms, and other operation areas."],
+  ["Incident Reporting","Recording accidents, injuries, hazards, and near-miss incidents for corrective action."],
+  ["Continuous Improvement","Reviewing safety practices and improving them based on incidents, inspections, and feedback."],
+  ["Threat","Any person, condition, activity, event, or situation with the potential to cause injury, illness, property damage, financial loss, or disruption of operations."],
+  ["Vulnerability","A weakness or condition that makes a person, facility, system, or organization more likely to be affected by a threat."],
+];
+
+const safety8 = [
+  "Hazard Identification — recognizing potential sources of accidents or injuries",
+  "Risk Assessment — determining the likelihood and possible consequences of identified hazards",
+  "Risk Prevention and Control — implementing measures to eliminate or reduce risks",
+  "Safety Policies and Standards — establishing rules and procedures for safe operations",
+  "Safety Training — training employees in first aid, fire safety, proper equipment use, and emergency response",
+  "Safety Inspection and Monitoring — regularly checking facilities, equipment, food areas, guest rooms, and other operation areas",
+  "Incident Reporting — recording accidents, injuries, hazards, and near-miss incidents for corrective action",
+  "Continuous Improvement — reviewing safety practices and improving them based on incidents, inspections, and feedback",
+];
+
+const emergency10 = [
+  "Emergency Preparedness — developing plans before an emergency occurs",
+  "Emergency Response Plan — establishing specific actions to be taken during different emergencies",
+  "Emergency Communication — providing clear instructions and informing guests, employees, authorities, and emergency responders",
+  "Evacuation Procedures — establishing escape routes, emergency exits, assembly areas, and evacuation procedures",
+  "Emergency Equipment — maintaining fire extinguishers, alarms, first aid kits, emergency lighting, communication devices",
+  "Assignment of Responsibilities — designating employees or emergency teams to perform specific tasks",
+  "First Aid and Medical Assistance — providing immediate care and arranging professional medical assistance when necessary",
+  "Emergency Drills and Training — conducting fire, earthquake, evacuation, and other emergency exercises",
+  "Coordination with Authorities — working with police, fire departments, hospitals, disaster-response agencies, and local government",
+  "Post Emergency Evaluation — assessing what happened, documenting the response, and improving the emergency plan",
+];
+
+const hazards = [
+  ["⚙️ Physical Hazard","A factor in the environment that can cause harm through direct contact — often things you can see, hear, or feel. Includes proper lifting techniques (bend at knees, not waist).","Slipping on a wet floor, tripping over a loose cable, being hit by a falling object, hearing loss from loud noise."],
+  ["🧪 Chemical Hazard","Any chemical substance — liquid, solid, or gas — that can cause a health risk, such as being toxic, flammable, or corrosive.","Spills from cleaning agents, inhaling fumes from paint/solvents, ingesting a toxic substance."],
+  ["🦠 Biological Hazard","An organism or substance from an organism that poses a threat to health, often leading to illness or disease. PPE (gloves, non-slip shoes, aprons) reduces exposure.","Exposure to mold, bacteria, viruses, or bodily fluids."],
+  ["🧍 Ergonomic Hazard","A physical condition that may pose a risk to the musculoskeletal system — arising from repetitive motions, awkward postures, or poorly designed workspaces.","Back strain from improper lifting, carpal tunnel from repetitive keyboard use, neck/shoulder pain from a poorly positioned monitor."],
+  ["⚡ Electrical Hazard","Involves risk of electric shock, burns, fires, or even death.","Electric shock from damaged cords, faulty kitchen appliances, overloaded outlets, wet electrical equipment, exposed wires."],
+  ["🔥 Fire and Explosion Hazard","Conditions that may cause fire, explosions, or serious property damage.","Cooking oil catches fire; gas leaks, grease fires, faulty electrical equipment, flammable materials, improper chemical storage."],
+  ["🚨 Security Hazard","Intentional acts or threats that may harm guests, employees, or property.","Theft, unauthorized access, violence, suspicious persons/packages, cybersecurity threats, terrorist/criminal threats; e.g. an unauthorized person entering a restricted staff area."],
+  ["🍽️ Sanitation and Food Safety Hazard","Can cause illness due to poor hygiene, contamination, or improper sanitation.","Raw chicken stored above ready-to-eat food (cross-contamination); dirty kitchen equipment, unsafe drinking water, poor waste disposal, inadequate handwashing."],
+];
+
+/* ---------- RENDER: glossary ---------- */
+const glossEl = document.getElementById('glossary');
+glossaryTerms.forEach((t,i)=>{
+  const div = document.createElement('div');
+  div.className='accordion-item';
+  div.innerHTML = `<div class="accordion-head" onclick="this.parentElement.classList.toggle('open')">
+      <span>${t[0]}</span><span class="chev">▶</span>
+    </div>
+    <div class="accordion-body"><div class="accordion-body-inner">${t[1]}</div></div>`;
+  glossEl.appendChild(div);
+});
+
+/* ---------- RENDER: safety 8 / emergency 10 ---------- */
+document.getElementById('safety8').innerHTML = safety8.map(s=>`<li>${s}</li>`).join('');
+document.getElementById('emergency10').innerHTML = emergency10.map(s=>`<li>${s}</li>`).join('');
+
+/* ---------- RENDER: hazards ---------- */
+const hg = document.getElementById('hazardGrid');
+hazards.forEach(h=>{
+  const div = document.createElement('div');
+  div.className='hazard-card';
+  div.innerHTML = `<h3>${h[0]}</h3><p>${h[1]}</p><p class="ex">Example: ${h[2]}</p>`;
+  hg.appendChild(div);
+});
+
+function toggleReveal(id){
+  const el = document.getElementById(id);
+  el.style.display = (el.style.display==='block') ? 'none' : 'block';
+}
+
+/* ---------- FLASHCARDS ---------- */
+let flashDeck = [
+  ["What is Safety?","Focuses on preventing accidents, injuries, and emergencies."],
+  ["What is Security?","Protects guests, employees, property, information, and business assets from threats like theft, violence, unauthorized access, and fraud."],
+  ["What is Sanitation?","Maintains cleanliness and prevents the spread of disease/contamination through food handling, hygiene, cleaning, waste disposal, and pest control."],
+  ["Define Risk Management (Tourism/Hospitality)","The methodical process of identifying, assessing, controlling, and monitoring risks that may affect guests, employees, facilities, operations, and the environment."],
+  ["What is a Threat?","Any person, condition, activity, event, or situation with the potential to cause injury, illness, property damage, financial loss, or disruption of operations."],
+  ["What is a Vulnerability?","A weakness or condition that makes a person, facility, system, or organization more likely to be affected by a threat."],
+  ["Name the 5 Risk Treatment options","Risk avoidance, risk reduction, risk sharing, risk retention, and risk escalation."],
+  ["3 questions to ask when communicating risk","Who needs to know? What do they need to know? How should we tell them?"],
+  ["What are the 7 Risk Assessment Techniques?","1) Identify hazards 2) Assess the Risk Matrix 3) Inspection/walkthrough 4) Job Safety Analysis 5) Standard checklists 6) Analysis of incidents/accidents 7) The 'what if' analysis."],
+  ["What's the 'critical thinking' question in risk treatment?","What should we do about the risk?"],
+  ["Physical Hazard — example?","Slipping on a wet floor, tripping over a loose cable, being hit by a falling object, or hearing loss from loud noise."],
+  ["Chemical Hazard — example?","Spills from cleaning agents, inhaling fumes from paint/solvents, or ingesting a toxic substance."],
+  ["Biological Hazard — example?","Exposure to mold, bacteria, viruses, or bodily fluids."],
+  ["Ergonomic Hazard — example?","Back strain from improper lifting, carpal tunnel syndrome, or neck/shoulder pain from poor posture/workstation design."],
+  ["Electrical Hazard — example?","Shock from damaged cords or faulty kitchen appliances; overloaded outlets, wet equipment, exposed wires."],
+  ["Fire/Explosion Hazard — example?","Cooking oil catching fire, gas leaks, grease fires, faulty electrical equipment, improper chemical storage."],
+  ["Security Hazard — example?","An unauthorized person entering a restricted employee area; theft, violence, cybersecurity threats."],
+  ["Sanitation/Food Safety Hazard — example?","Raw chicken stored above ready-to-eat food, causing possible cross-contamination."],
+  ["What governs OHS compliance in the Philippines (as cited)?","Occupational Health & Safety (OHS) ISO 45001:2018 standards — it's the law AND good business practice."],
+  ["What are the 8 components of Safety Management?","Hazard ID, Risk Assessment, Risk Prevention & Control, Safety Policies & Standards, Safety Training, Safety Inspection & Monitoring, Incident Reporting, Continuous Improvement."],
+  ["What are the 10 components of Emergency Procedures?","Emergency Preparedness, Response Plan, Communication, Evacuation Procedures, Emergency Equipment, Assignment of Responsibilities, First Aid/Medical Assistance, Drills & Training, Coordination with Authorities, Post-Emergency Evaluation."],
+  ["Why is Risk Management important? (name 3)","Protects guests & employees; prevents accidents/illness/damage; builds customer trust and protects reputation."],
+];
+let flashIndex = 0;
+let flipped = false;
+
+function renderFlash(){
+  document.getElementById('flashFront').textContent = flashDeck[flashIndex][0];
+  document.getElementById('flashBack').textContent = flashDeck[flashIndex][1];
+  document.getElementById('flashCounter').textContent = (flashIndex+1)+' / '+flashDeck.length;
+  document.getElementById('flashcard').classList.remove('flipped');
+  flipped = false;
+}
+function flipCard(){
+  flipped = !flipped;
+  document.getElementById('flashcard').classList.toggle('flipped', flipped);
+}
+function nextCard(){ flashIndex = (flashIndex+1) % flashDeck.length; renderFlash(); }
+function prevCard(){ flashIndex = (flashIndex-1+flashDeck.length) % flashDeck.length; renderFlash(); }
+function shuffleCards(){
+  for(let i=flashDeck.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [flashDeck[i],flashDeck[j]] = [flashDeck[j],flashDeck[i]];
+  }
+  flashIndex = 0;
+  renderFlash();
+}
+renderFlash();
+
+/* ---------- SECTION PRACTICE QUIZZES ---------- */
+function shuffleArray(arr){
+  const a = [...arr];
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+const qbanks = {
+  definitions:[
+    {q:"Which term focuses on preventing accidents, injuries, and emergencies?", opts:["Security","Safety","Sanitation","Escalation"], correct:1, explain:"Safety focuses on preventing accidents, injuries, and emergencies."},
+    {q:"Protecting guests, employees, property, and information from theft, violence, and fraud describes:", opts:["Sanitation","Vulnerability","Security","Risk Retention"], correct:2, explain:"Security protects people, property, and assets from threats like theft, violence, unauthorized access, and fraud."},
+    {q:"Maintaining cleanliness and preventing the spread of disease/contamination describes:", opts:["Safety","Sanitation","Threat","Risk Sharing"], correct:1, explain:"Sanitation focuses on cleanliness and preventing contamination — food handling, hygiene, waste disposal, pest control."},
+    {q:"'Any person, condition, activity, or situation with the potential to cause harm' defines a:", opts:["Vulnerability","Hazard Control","Threat","Risk Treatment"], correct:2, explain:"A Threat is anything with the potential to cause injury, illness, property damage, financial loss, or disruption."},
+    {q:"A weakness that makes someone or something more likely to be affected by a threat is a:", opts:["Vulnerability","Escalation","Hazard Identification","Sanitation gap"], correct:0, explain:"Vulnerability is a weakness/condition that increases the chance of being affected by a threat."},
+    {q:"Recognizing potential sources of accidents or injuries is called:", opts:["Incident Reporting","Hazard Identification","Risk Sharing","Post-Emergency Evaluation"], correct:1, explain:"Hazard Identification means recognizing potential sources of accidents or injuries."},
+    {q:"Determining the likelihood and possible consequences of identified hazards is:", opts:["Risk Assessment","Risk Avoidance","Safety Training","Vulnerability"], correct:0, explain:"Risk Assessment determines likelihood and possible consequences of identified hazards."},
+    {q:"Recording accidents, injuries, hazards, and near-misses for corrective action is:", opts:["Emergency Communication","Incident Reporting","Risk Escalation","Job Safety Analysis"], correct:1, explain:"Incident Reporting is recording accidents, injuries, hazards, and near-misses for corrective action."},
+  ],
+  safety:[
+    {q:"Establishing rules and procedures for safe operations is called:", opts:["Safety Training","Safety Policies and Standards","Incident Reporting","Continuous Improvement"], correct:1, explain:"Safety Policies and Standards establish the rules and procedures for safe operations."},
+    {q:"Training employees in first aid, fire safety, and emergency response falls under:", opts:["Safety Training","Hazard Identification","Risk Retention","Post-Emergency Evaluation"], correct:0, explain:"Safety Training covers first aid, fire safety, proper equipment use, and emergency response."},
+    {q:"Regularly checking facilities, food areas, and guest rooms is:", opts:["Safety Inspection and Monitoring","Risk Sharing","Emergency Drills","Job Safety Analysis"], correct:0, explain:"Safety Inspection and Monitoring is the regular checking of facilities, equipment, and operation areas."},
+    {q:"Reviewing safety practices and improving them based on feedback describes:", opts:["Risk Escalation","Continuous Improvement","Hazard Control","Vulnerability Assessment"], correct:1, explain:"Continuous Improvement means reviewing and improving safety practices based on incidents, inspections, and feedback."},
+    {q:"Implementing measures to eliminate or reduce identified risks is:", opts:["Risk Prevention and Control","Safety Policies","Incident Reporting","Threat Escalation"], correct:0, explain:"Risk Prevention and Control means implementing measures to eliminate or reduce risks."},
+    {q:"Which component comes FIRST in the 8-component Safety Management list?", opts:["Safety Training","Hazard Identification","Incident Reporting","Continuous Improvement"], correct:1, explain:"Hazard Identification is the first of the 8 Safety Management components."},
+    {q:"Which component is LAST in the 8-component list?", opts:["Continuous Improvement","Risk Assessment","Safety Policies and Standards","Safety Inspection"], correct:0, explain:"Continuous Improvement is the final component — closing the loop by improving based on findings."},
+    {q:"Safety Management is best described as a systematic process of:", opts:["Only responding to fires", "Identifying hazards, assessing risks, preventing accidents, and protecting people/property/environment", "Only training new hires", "Handling guest complaints"], correct:1, explain:"Safety Management systematically identifies hazards, assesses risks, prevents accidents, and protects guests, employees, property, and the environment."},
+  ],
+  emergency:[
+    {q:"Developing plans BEFORE an emergency occurs is:", opts:["Post-Emergency Evaluation","Emergency Preparedness","Evacuation Procedures","Coordination with Authorities"], correct:1, explain:"Emergency Preparedness means developing plans before an emergency occurs."},
+    {q:"Establishing escape routes, exits, and assembly areas is:", opts:["Evacuation Procedures","Emergency Equipment","First Aid and Medical Assistance","Emergency Response Plan"], correct:0, explain:"Evacuation Procedures establish escape routes, emergency exits, assembly areas, and evacuation steps."},
+    {q:"Maintaining fire extinguishers, alarms, and first aid kits is:", opts:["Emergency Equipment","Assignment of Responsibilities","Emergency Drills","Emergency Communication"], correct:0, explain:"Emergency Equipment includes fire extinguishers, alarms, first aid kits, emergency lighting, and communication devices."},
+    {q:"Working with police, fire departments, and hospitals during a crisis is:", opts:["Post-Emergency Evaluation","Coordination with Authorities","Emergency Response Plan","Assignment of Responsibilities"], correct:1, explain:"Coordination with Authorities means working with police, fire departments, hospitals, and local government."},
+    {q:"Assessing what happened and improving the plan afterward is:", opts:["Emergency Preparedness","Post-Emergency Evaluation","Emergency Drills and Training","Emergency Communication"], correct:1, explain:"Post-Emergency Evaluation assesses what happened, documents the response, and improves the plan."},
+    {q:"Designating employees or teams to perform specific tasks in an emergency is:", opts:["Assignment of Responsibilities","Emergency Response Plan","Evacuation Procedures","Emergency Equipment"], correct:0, explain:"Assignment of Responsibilities designates employees or emergency teams to perform specific tasks."},
+    {q:"Conducting fire, earthquake, and evacuation exercises is:", opts:["Emergency Drills and Training","Emergency Preparedness","First Aid and Medical Assistance","Coordination with Authorities"], correct:0, explain:"Emergency Drills and Training involves conducting fire, earthquake, evacuation, and other emergency exercises."},
+    {q:"Which of these belongs to the 'DURING' phase in the Before/During/After grouping?", opts:["Emergency Preparedness","Post-Emergency Evaluation","Emergency Communication","Coordination with Authorities"], correct:2, explain:"Emergency Communication happens during the event — providing clear instructions as it unfolds."},
+    {q:"A weakness that makes a facility more likely to be affected by a threat is a:", opts:["Vulnerability","Emergency Equipment gap","Response Plan flaw","Drill failure"], correct:0, explain:"This is the definition of Vulnerability."},
+    {q:"Any event with the potential to cause injury, damage, or disruption is a:", opts:["Threat","Vulnerability","Evacuation trigger","Drill scenario"], correct:0, explain:"This is the definition of a Threat."},
+  ],
+  hazards:[
+    {q:"Slipping on a wet floor or tripping over a loose cable is an example of:", opts:["Physical Hazard","Chemical Hazard","Ergonomic Hazard","Security Hazard"], correct:0, explain:"These are classic Physical Hazard examples."},
+    {q:"Inhaling fumes from paint or solvents is an example of:", opts:["Biological Hazard","Chemical Hazard","Fire Hazard","Ergonomic Hazard"], correct:1, explain:"Fumes from paint/solvents are a Chemical Hazard."},
+    {q:"Exposure to mold, bacteria, or bodily fluids is an example of:", opts:["Biological Hazard","Electrical Hazard","Sanitation Hazard","Physical Hazard"], correct:0, explain:"This is a Biological Hazard — organisms/substances that threaten health."},
+    {q:"Back strain from improper lifting or carpal tunnel from repetitive typing is:", opts:["Ergonomic Hazard","Chemical Hazard","Fire Hazard","Security Hazard"], correct:0, explain:"These are Ergonomic Hazards — related to posture and repetitive motion."},
+    {q:"An employee receives a shock from a damaged cord or overloaded outlet — this is:", opts:["Electrical Hazard","Chemical Hazard","Biological Hazard","Ergonomic Hazard"], correct:0, explain:"This is an Electrical Hazard."},
+    {q:"Cooking oil catching fire in the kitchen is an example of:", opts:["Fire and Explosion Hazard","Chemical Hazard","Physical Hazard","Sanitation Hazard"], correct:0, explain:"This is a Fire and Explosion Hazard."},
+    {q:"An unauthorized person entering a restricted staff area is an example of:", opts:["Security Hazard","Physical Hazard","Ergonomic Hazard","Chemical Hazard"], correct:0, explain:"This is a Security Hazard — an intentional act/threat to people or property."},
+    {q:"Raw chicken stored above ready-to-eat food, causing cross-contamination, is:", opts:["Sanitation and Food Safety Hazard","Biological Hazard only","Chemical Hazard","Physical Hazard"], correct:0, explain:"This is a Sanitation and Food Safety Hazard — improper storage causing cross-contamination."},
+  ],
+  assessment:[
+    {q:"Which risk assessment technique involves reviewing past incidents and accidents?", opts:["Job Safety Analysis","Analysis of incidents and accidents","Standard checklists","The 'what if' analysis"], correct:1, explain:"Analysis of incidents and accidents reviews what has already happened to learn from it."},
+    {q:"Asking 'what could go wrong if...' is part of which technique?", opts:["The 'what if' analysis","Inspection and walkthrough","Job Safety Analysis","Standard checklists"], correct:0, explain:"The 'what if' analysis explores hypothetical failure scenarios."},
+    {q:"Which is the FIRST step in the 7-step risk assessment process?", opts:["Implement control practices","Determine the context of the scenario","Select control measures","Monitor and review"], correct:1, explain:"The process starts by determining the context of the scenario."},
+    {q:"Which is the LAST step in the 7-step process?", opts:["Identify potential hazards","Monitor and review effectiveness","Evaluate and prioritize","Select control measures"], correct:1, explain:"The process ends with monitoring and reviewing effectiveness and making adjustments."},
+    {q:"Physically walking through a site to spot hazards is called:", opts:["Inspection and walkthrough examination","Job Safety Analysis","Standard checklists","What-if analysis"], correct:0, explain:"Inspection and walkthrough examination involves physically checking the site."},
+    {q:"Using a pre-made list of items to check off is an example of:", opts:["Standard checklists","Job Safety Analysis","What-if analysis","Analysis of incidents"], correct:0, explain:"Standard checklists use pre-set items to verify against."},
+    {q:"Assessing severity and likelihood using a grid is called:", opts:["Risk Matrix assessment","Job Safety Analysis","Standard checklists","Post-emergency evaluation"], correct:0, explain:"The Risk Matrix assesses severity (impact) against likelihood."},
+    {q:"Breaking a specific job down into steps to spot hazards in each step is:", opts:["Job Safety Analysis","Standard checklists","Inspection and walkthrough","What-if analysis"], correct:0, explain:"Job Safety Analysis breaks a job into steps and examines the hazards in each."},
+  ],
+  treatment:[
+    {q:"Completely eliminating an activity that creates risk is called risk:", opts:["Avoidance","Sharing","Retention","Escalation"], correct:0, explain:"Risk Avoidance means eliminating the activity or exposure entirely."},
+    {q:"Transferring risk through insurance or contracts is risk:", opts:["Retention","Sharing","Reduction","Avoidance"], correct:1, explain:"Risk Sharing transfers or distributes risk, e.g. through insurance."},
+    {q:"Accepting a risk because it's within tolerable limits is risk:", opts:["Retention","Escalation","Avoidance","Sharing"], correct:0, explain:"Risk Retention means accepting the risk as-is."},
+    {q:"Referring a risk to a higher authority for a decision is risk:", opts:["Escalation","Reduction","Avoidance","Sharing"], correct:0, explain:"Risk Escalation means referring the risk up the chain for a decision."},
+    {q:"Lowering the likelihood or severity of a risk through controls is risk:", opts:["Reduction","Retention","Escalation","Sharing"], correct:0, explain:"Risk Reduction lowers likelihood or severity through control measures."},
+    {q:"The central question in the Critical Thinking framework for risk treatment is:", opts:["How much will it cost?","What should we do about the risk?","Who is to blame?","When did it happen?"], correct:1, explain:"The framework centers on: 'What should we do about the risk?'"},
+    {q:"Which is NOT one of the 3 communication questions (Who/What/How)?", opts:["Who needs to know?","What do they need to know?","How should we tell them?","Why did it happen?"], correct:3, explain:"The three questions are Who needs to know, What they need to know, and How to tell them — not 'why did it happen.'"},
+  ],
+};
+
+function renderSectionQuiz(key, numQuestions){
+  const bank = qbanks[key];
+  const pqEl = document.getElementById('pq-'+key);
+  const mpEl = document.getElementById('mp-'+key);
+  const picked = shuffleArray(bank).slice(0, Math.min(numQuestions, bank.length));
+  // pre-shuffle option order per question, tracking new correct index
+  const questions = picked.map(orig=>{
+    const optsWithFlag = orig.opts.map((o,i)=>({text:o, isCorrect:i===orig.correct}));
+    const shuffledOpts = shuffleArray(optsWithFlag);
+    return {
+      q: orig.q,
+      explain: orig.explain,
+      opts: shuffledOpts.map(o=>o.text),
+      correct: shuffledOpts.findIndex(o=>o.isCorrect)
+    };
+  });
+  const state = {idx:0, score:0};
+
+  function renderQ(){
+    mpEl.style.width = (state.idx/questions.length*100)+'%';
+    if(state.idx >= questions.length){
+      const pct = Math.round((state.score/questions.length)*100);
+      pqEl.innerHTML = `<div class="quiz-result">
+          <p style="font-size:1.05rem;">Score: <b>${state.score} / ${questions.length}</b> (${pct}%)</p>
+          <p class="lead">Click "Generate New Practice Quiz" below for a fresh set.</p>
+        </div>`;
+      mpEl.style.width='100%';
+      return;
+    }
+    const q = questions[state.idx];
+    pqEl.innerHTML = `
+      <div class="counter" style="margin-bottom:6px;">Question ${state.idx+1} of ${questions.length} · Score: ${state.score}</div>
+      <div class="quiz-q" style="font-size:0.98rem;">${q.q}</div>
+      <div id="secOpts-${key}"></div>
+      <div class="explain" id="secExplain-${key}">${q.explain}</div>
+      <div style="margin-top:10px; text-align:right;">
+        <button class="btn" id="secNext-${key}" style="display:none;">Next ▶</button>
+      </div>
+    `;
+    const wrap = document.getElementById('secOpts-'+key);
+    q.opts.forEach((opt,i)=>{
+      const b = document.createElement('button');
+      b.className='opt';
+      b.textContent = opt;
+      b.onclick = ()=>{
+        if(b.dataset.answered) return;
+        const opts = wrap.querySelectorAll('.opt');
+        opts.forEach((o,idx)=>{
+          o.classList.add('disabled');
+          o.dataset.answered='1';
+          if(idx===q.correct) o.classList.add('correct');
+          else if(idx===i) o.classList.add('incorrect');
+        });
+        if(i===q.correct) state.score++;
+        document.getElementById('secExplain-'+key).style.display='block';
+        document.getElementById('secNext-'+key).style.display='inline-block';
+      };
+      wrap.appendChild(b);
+    });
+    document.getElementById('secNext-'+key).onclick = ()=>{
+      state.idx++;
+      renderQ();
+    };
+  }
+  renderQ();
+}
+
+['definitions','safety','emergency','hazards','assessment','treatment'].forEach(key=>{
+  renderSectionQuiz(key, 4);
+  document.getElementById('regen-'+key).addEventListener('click', ()=>renderSectionQuiz(key, 4));
+});
+
+/* ---------- QUIZ ---------- */
+const quizQuestions = [
+  {
+    q:"What is the primary focus of 'Safety' in risk management?",
+    opts:["Protecting property from theft","Preventing accidents, injuries, and emergencies","Maintaining cleanliness only","Handling customer complaints"],
+    correct:1,
+    explain:"Safety focuses on preventing accidents, injuries, and emergencies."
+  },
+  {
+    q:"Which term is defined as 'a weakness or condition that makes a person, facility, system, or organization more likely to be affected by a threat'?",
+    opts:["Threat","Vulnerability","Hazard","Risk Treatment"],
+    correct:1,
+    explain:"Vulnerability is the weakness/condition that increases likelihood of being affected by a threat."
+  },
+  {
+    q:"An employee slips on a wet kitchen floor. What type of hazard is this?",
+    opts:["Chemical Hazard","Ergonomic Hazard","Physical Hazard","Security Hazard"],
+    correct:2,
+    explain:"Slipping on a wet floor is a classic example of a Physical Hazard."
+  },
+  {
+    q:"Raw chicken stored above ready-to-eat food, risking cross-contamination, is an example of which hazard?",
+    opts:["Biological Hazard","Sanitation and Food Safety Hazard","Chemical Hazard","Electrical Hazard"],
+    correct:1,
+    explain:"This is a Sanitation and Food Safety hazard — improper food storage causing cross-contamination."
+  },
+  {
+    q:"Which of the following is NOT one of the 5 Risk Treatment options?",
+    opts:["Risk avoidance","Risk retention","Risk elimination","Risk escalation"],
+    correct:2,
+    explain:"The 5 options are avoidance, reduction, sharing, retention, and escalation — 'risk elimination' is not one of the five named categories."
+  },
+  {
+    q:"In the Critical Thinking framework for risk communication, which question is NOT asked?",
+    opts:["Who needs to know?","What do they need to know?","How should we tell them?","How much will it cost?"],
+    correct:3,
+    explain:"The three questions are: Who needs to know? What do they need to know? How should we tell them?"
+  },
+  {
+    q:"Which ISO standard governs Occupational Health & Safety (OHS) as cited in the lecture?",
+    opts:["ISO 9001:2015","ISO 45001:2018","ISO 22000:2018","ISO 14001:2015"],
+    correct:1,
+    explain:"ISO 45001:2018 is the Occupational Health & Safety standard referenced — it's both the law and good practice."
+  },
+  {
+    q:"A propped-open, unlocked emergency exit during business hours is best classified as a:",
+    opts:["Safety hazard","Security vulnerability","Ergonomic hazard","Sanitation issue"],
+    correct:1,
+    explain:"An unattended, unlocked exit is a Security vulnerability — it allows unauthorized access."
+  },
+  {
+    q:"Which of these is part of the 8 components of Safety Management (not Emergency Procedures)?",
+    opts:["Evacuation Procedures","Coordination with Authorities","Safety Inspection and Monitoring","Post Emergency Evaluation"],
+    correct:2,
+    explain:"Safety Inspection and Monitoring is one of the 8 Safety Management components; the other options belong to Emergency Procedures."
+  },
+  {
+    q:"'Prevention is better than cure' reflects which principle in risk management?",
+    opts:["Risk retention","Primary prevention approach","Post-emergency evaluation","Risk sharing"],
+    correct:1,
+    explain:"The primary prevention approach means anticipating hazards and acting before they cause harm."
+  },
+  {
+    q:"Carpal tunnel syndrome from repetitive keyboard use is an example of which hazard?",
+    opts:["Ergonomic Hazard","Electrical Hazard","Biological Hazard","Fire Hazard"],
+    correct:0,
+    explain:"Repetitive strain injuries like carpal tunnel syndrome fall under Ergonomic Hazards."
+  },
+  {
+    q:"Which step comes FIRST in the 7-step Risk Assessment process?",
+    opts:["Implement control practices","Determine the context of the scenario","Monitor and review effectiveness","Select control measures"],
+    correct:1,
+    explain:"The process begins with determining the context of the scenario, then identifying hazards, and so on."
+  },
+];
+
+let quizState = {idx:0, score:0, answered:false};
+
+function renderQuiz(){
+  const body = document.getElementById('quizBody');
+  document.getElementById('quizProgress').style.width = (quizState.idx/quizQuestions.length*100)+'%';
+
+  if(quizState.idx >= quizQuestions.length){
+    const pct = Math.round((quizState.score/quizQuestions.length)*100);
+    body.innerHTML = `<div class="quiz-result">
+        <h3>🎉 Quiz Complete!</h3>
+        <p style="font-size:1.1rem;">You scored <b>${quizState.score} / ${quizQuestions.length}</b> (${pct}%)</p>
+        <button class="btn gold" onclick="restartQuiz()">Try Again</button>
+      </div>`;
+    document.getElementById('quizProgress').style.width = '100%';
+    return;
+  }
+
+  const q = quizQuestions[quizState.idx];
+  quizState.answered = false;
+  body.innerHTML = `
+    <div class="counter" style="margin-bottom:8px;">Question ${quizState.idx+1} of ${quizQuestions.length} &nbsp;·&nbsp; Score: ${quizState.score}</div>
+    <div class="quiz-q">${q.q}</div>
+    <div id="optsWrap"></div>
+    <div class="explain" id="quizExplain">${q.explain}</div>
+    <div style="margin-top:14px; text-align:right;">
+      <button class="btn" id="nextBtn" style="display:none;" onclick="nextQuiz()">Next ▶</button>
+    </div>
+  `;
+  const wrap = document.getElementById('optsWrap');
+  q.opts.forEach((opt,i)=>{
+    const b = document.createElement('button');
+    b.className='opt';
+    b.textContent = opt;
+    b.onclick = ()=>selectOpt(i);
+    wrap.appendChild(b);
+  });
+}
+
+function selectOpt(i){
+  if(quizState.answered) return;
+  quizState.answered = true;
+  const q = quizQuestions[quizState.idx];
+  const opts = document.querySelectorAll('#optsWrap .opt');
+  opts.forEach((o,idx)=>{
+    o.classList.add('disabled');
+    if(idx===q.correct) o.classList.add('correct');
+    else if(idx===i) o.classList.add('incorrect');
+  });
+  if(i===q.correct) quizState.score++;
+  document.getElementById('quizExplain').style.display='block';
+  document.getElementById('nextBtn').style.display='inline-block';
+}
+
+function nextQuiz(){
+  quizState.idx++;
+  renderQuiz();
+}
+function restartQuiz(){
+  quizState = {idx:0, score:0, answered:false};
+  renderQuiz();
+}
+renderQuiz();
+</script>
+</body>
+</html>
